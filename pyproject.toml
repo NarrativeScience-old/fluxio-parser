@@ -1,0 +1,22 @@
+[tool.poetry]
+name = "fluxio-parser"
+version = "0.1.0"
+description = "Fluxio parser library"
+authors = ["Jonathan Drake <jdrake@narrativescience.com>"]
+license = "BSD-3-Clause"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.6"
+astor = "^0.8.1"
+pypants = "^1"
+black = "^19.3b0"
+networkx = "^2.5"
+
+[tool.poetry.dev-dependencies]
+pytest = "^6.2.2"
+flake8 = "^3.8.4"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
