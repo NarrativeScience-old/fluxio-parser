@@ -1,6 +1,6 @@
 """Contains AST visitor class used to parse a Task class"""
 import ast
-from typing import Any, Callable, NamedTuple, Set, Union
+from typing import Any, Callable, NamedTuple, Optional, Set, Union
 
 from ..exceptions import assert_supported_operation, UnsupportedOperation
 from ..transformers import RunMethodTransformer
@@ -53,6 +53,25 @@ ATTRIBUTE_MAP = {
 }
 
 
+class ModuleImportVisitor(ast.NodeVisitor):
+    """AST visitor for collecting imports"""
+
+    def __init__(self) -> None:
+        self.import_nodes = []
+        self.dependencies: Set[str] = set()
+
+    def visit_ImportFrom(self, node) -> None:
+        """Collect an import when specified as `from foo import bar`"""
+        if node.module is not None:
+            self.import_nodes.append(node)
+            self.dependencies.add(node.module.split(".")[0])
+
+    def visit_Import(self, node) -> None:
+        """Collect an import when specified as `import foo`"""
+        self.import_nodes.append(node)
+        self.dependencies.add(node.names[0].name.split(".")[0])
+
+
 class TaskVisitor(ast.NodeVisitor):
     """AST node visitor that parses a Task class in a .sfn file.
 
@@ -71,9 +90,8 @@ class TaskVisitor(ast.NodeVisitor):
     """
 
     def __init__(self) -> None:
+        self.run_visitor: Optional[ModuleImportVisitor] = None
         self.run_method = None
-        self.imports = []
-        self.run_method_body = []
         # Set default attribute values
         self.attributes = {
             key: attribute.default_value for key, attribute in ATTRIBUTE_MAP.items()
@@ -86,11 +104,8 @@ class TaskVisitor(ast.NodeVisitor):
 
         """
         if node.name == "run":
-            for item in node.body:
-                if isinstance(item, (ast.Import, ast.ImportFrom)):
-                    self.imports.append(item)
-                else:
-                    self.run_method_body.append(item)
+            self.run_visitor = ModuleImportVisitor()
+            self.run_visitor.visit(node)
             self.run_method = RunMethodTransformer().visit(node)
             return
 

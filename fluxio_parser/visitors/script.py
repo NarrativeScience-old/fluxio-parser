@@ -1,7 +1,7 @@
 """Contains AST visitor class used to parse a .sfn file"""
 import ast
 from collections import defaultdict
-from typing import Any
+from typing import Any, Dict, Set
 
 from ..exceptions import assert_supported_operation, UnsupportedOperation
 from ..resource_decorators import RESOURCE_DECORATOR_MAP
@@ -19,8 +19,17 @@ class ScriptVisitor(ast.NodeVisitor):
     """
 
     def __init__(self) -> None:
-        self.task_visitors = {}
+        self.task_visitors: Dict[str, TaskVisitor] = {}
         self.state_machine_visitors = {}
+
+    @property
+    def dependencies(self) -> Set[str]:
+        """Returns the full set of package dependencies across all tasks"""
+        deps = set()
+        for visitor in self.task_visitors.values():
+            deps.update(visitor.run_visitor.dependencies)
+
+        return deps
 
     def visit_ClassDef(self, node: Any) -> None:
         """Visit a class definition
