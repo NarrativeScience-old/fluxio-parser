@@ -32,7 +32,7 @@ OPTION_MAP = {
         value_type=ast.Str,
         value_type_label="string",
         get_value=GET_VALUE_MAP[str],
-        default_value=lambda node: f"{node.func.id}-{hash_node(node)}",
+        default_value=lambda node, visitor: f"{node.func.id}-{hash_node(node)}",
     ),
     "timeout": CallableOption(
         value_type=ast.Num,
