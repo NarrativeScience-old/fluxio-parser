@@ -16,7 +16,6 @@ def main(data):
 """
         visitor = parse_project_tree(ast.parse(code))
         self.assertDictEqual(visitor.event_processor_visitors, {})
-        self.assertTrue(visitor.state_machine_visitors["main"].requires_infrastructure)
         self.assertIsNone(
             visitor.state_machine_visitors["main"].event_processor["processor"]
         )
@@ -33,8 +32,7 @@ def main(data):
 """
         visitor = parse_project_tree(ast.parse(code))
         self.assertIn("TestEventProcessor", visitor.event_processor_visitors)
-        self.assertTrue(visitor.state_machine_visitors["main"].requires_infrastructure)
         self.assertEqual(
-            visitor.state_machine_visitors["main"].event_processor["processor"].id,
+            visitor.state_machine_visitors["main"].event_processor["processor"],
             "TestEventProcessor",
         )

@@ -130,16 +130,6 @@ class StateMachineVisitor(ast.NodeVisitor):
 
         return states
 
-    @property
-    def requires_infrastructure(self) -> bool:
-        """Returns whether the state machine requires CloudFormation infrastructure"""
-        return (
-            (self.export is not None and self.export["enabled"])
-            or self.schedule is not None
-            or self.event_processor
-            or self.is_first_class
-        )
-
     def shape_nodes(self) -> None:
         """Shape each state node in the graph"""
         for state in list(self.state_graph.nodes):

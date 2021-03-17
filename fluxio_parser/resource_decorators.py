@@ -20,7 +20,7 @@ def get_subscribe_status(node: Any, visitor: Optional[ast.NodeVisitor]) -> str:
         :py:exc:`UnsupportedOperation` if the value isn't valid
 
     """
-    value = GET_VALUE_MAP[str](node)
+    value = GET_VALUE_MAP[str](node, visitor)
     assert_supported_operation(
         value in {"success", "failure"},
         f"Status must be one of success|failure. Provided: {value}",
@@ -29,25 +29,26 @@ def get_subscribe_status(node: Any, visitor: Optional[ast.NodeVisitor]) -> str:
     return value
 
 
-def get_event_processor(node: Any, visitor: Optional[ast.NodeVisitor]) -> ast.Name:
+def get_event_processor(node: Any, visitor: Optional[ast.NodeVisitor]) -> str:
     """Get the event processor option value
 
-    Since the option accepts a class, we just return the AST node.
+    Since the option accepts a class, we take the class's AST node ID and map it to an
+    event processor visitor that was already parsed by the script visitor.
 
     Args:
         node: AST node of the keyword value
         visitor: Instance of a node visitor to provide extra context for parsing options
 
     Returns:
-        event processor class
+        class name of the custom event processor
 
     """
     assert_supported_operation(
         node.id in visitor.event_processor_visitors,
-        "Processor must inherit directly from EventProcessor",
+        "Processor must exist and directly inherit from EventProcessor",
         node,
     )
-    return node
+    return node.id
 
 
 # Map of resource decorator configurations. Each decorator configuration contains keys:

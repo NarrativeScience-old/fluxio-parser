@@ -105,7 +105,7 @@ class CallableOption(NamedTuple):
     #: Label for the expected value type
     value_type_label: str
     #: Getter function for extracting the value from the AST node
-    get_value: Callable
+    get_value: Callable[[Any, ast.NodeVisitor], Any]
     #: Default value if the option is not provided
     default_value: Any = None  # noqa
     #: Flag indicating that this option is required
