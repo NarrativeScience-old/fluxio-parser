@@ -8,7 +8,9 @@ RETRY_OPTION_MAP = {
     "on_exceptions": CallableOption(
         value_type=ast.List,
         value_type_label="list",
-        get_value=lambda node: [serialize_error_name(elt) for elt in node.elts],
+        get_value=lambda node, visitor: [
+            serialize_error_name(elt) for elt in node.elts
+        ],
         default_value=["Exception"],
     ),
     "interval": CallableOption(

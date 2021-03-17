@@ -21,9 +21,9 @@ from ..base import State, StateMachineFragment
 from .retry import Retry, RETRY_OPTION_MAP
 
 
-def convert_data_dict(node):
+def convert_data_dict(node: Any, visitor: ast.NodeVisitor) -> str:
     """Convert dict with ``data[...]`` references to ``"$[...]"``"""
-    return GET_VALUE_MAP[dict](DataDictTransformer().visit(node))
+    return GET_VALUE_MAP[dict](DataDictTransformer().visit(node), visitor)
 
 
 # Map of task option name to an option schema
@@ -32,7 +32,7 @@ OPTION_MAP = {
         value_type=ast.Str,
         value_type_label="string",
         get_value=GET_VALUE_MAP[str],
-        default_value=lambda node: f"{node.func.id}-{hash_node(node)}",
+        default_value=lambda node, visitor: f"{node.func.id}-{hash_node(node)}",
     ),
     "timeout": CallableOption(
         value_type=ast.Num,

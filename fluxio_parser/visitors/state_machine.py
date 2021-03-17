@@ -39,9 +39,10 @@ class StateMachineVisitor(ast.NodeVisitor):
         name: str,
         task_visitors: Dict[str, "TaskVisitor"],
         state_machine_visitors: Dict[str, "StateMachineVisitor"],
-        schedule: List[Dict] = None,
-        export: List[Dict] = None,
-        subscribe: List[Dict] = None,
+        schedule: Optional[List[Dict]] = None,
+        export: Optional[List[Dict]] = None,
+        subscribe: Optional[List[Dict]] = None,
+        process_events: Optional[List[Dict]] = None,
     ) -> None:
         """Initialize a state machine visitor
 
@@ -64,6 +65,9 @@ class StateMachineVisitor(ast.NodeVisitor):
                   Defaults to "main". Only applies if ``project`` is specified.
                 * **status** -- High-level execution status. One of success|failure.
                   Only applies if ``project`` is specified.
+            process_events: List of dicts with event processor options containing keys:
+                * **processor** -- Event processor class. If not provided, the default
+                  event processor will be used
 
         """
         self.name = name
@@ -71,7 +75,8 @@ class StateMachineVisitor(ast.NodeVisitor):
         self._state_machine_visitors = state_machine_visitors
         self.schedule = schedule[0] if schedule is not None else None
         self.export = export[0] if export is not None else None
-        self.subscribes = subscribe if subscribe is not None else []
+        self.subscribes = subscribe or []
+        self.event_processor = process_events[0] if process_events is not None else None
         # The attributes are used when this visitor is included as a task state in
         # another state machine. We'll hard-code the service attribute so the correct
         # task state class is chosen in the factory.
@@ -124,15 +129,6 @@ class StateMachineVisitor(ast.NodeVisitor):
                 states.extend(state.task_states)
 
         return states
-
-    @property
-    def requires_infrastructure(self) -> bool:
-        """Returns whether the state machine requires CloudFormation infrastructure"""
-        return (
-            (self.export is not None and self.export["enabled"])
-            or self.schedule is not None
-            or self.is_first_class
-        )
 
     def shape_nodes(self) -> None:
         """Shape each state node in the graph"""

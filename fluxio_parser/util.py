@@ -3,7 +3,7 @@ import ast
 import hashlib
 import logging
 import re
-from typing import Any, Callable, Dict, NamedTuple
+from typing import Any, Callable, Dict, NamedTuple, Optional
 
 import astor
 
@@ -79,12 +79,12 @@ def serialize_error_name(node: Any) -> str:
 
 # Map of data type to a value getter function
 GET_VALUE_MAP = {
-    str: lambda node: node.s,
-    int: lambda node: node.n,
-    float: lambda node: node.n,
-    bool: lambda node: node.value,
-    dict: lambda node: ast.literal_eval(astor.to_source(node).strip()),
-    list: lambda node: ast.literal_eval(astor.to_source(node).strip()),
+    str: lambda node, visitor: node.s,
+    int: lambda node, visitor: node.n,
+    float: lambda node, visitor: node.n,
+    bool: lambda node, visitor: node.value,
+    dict: lambda node, visitor: ast.literal_eval(astor.to_source(node).strip()),
+    list: lambda node, visitor: ast.literal_eval(astor.to_source(node).strip()),
 }
 
 
@@ -105,7 +105,7 @@ class CallableOption(NamedTuple):
     #: Label for the expected value type
     value_type_label: str
     #: Getter function for extracting the value from the AST node
-    get_value: Callable
+    get_value: Callable[[Any, ast.NodeVisitor], Any]
     #: Default value if the option is not provided
     default_value: Any = None  # noqa
     #: Flag indicating that this option is required
@@ -130,7 +130,11 @@ class OptionsMap(dict):
         self.node = node
 
 
-def parse_options(option_map: Dict[str, CallableOption], node: ast.Call) -> OptionsMap:
+def parse_options(
+    option_map: Dict[str, CallableOption],
+    node: ast.Call,
+    visitor: Optional[ast.NodeVisitor] = None,
+) -> OptionsMap:
     """Parse options from keyword arguments passed to a Callable.
 
     See :py:class:`CallableOption`
@@ -138,6 +142,7 @@ def parse_options(option_map: Dict[str, CallableOption], node: ast.Call) -> Opti
     Args:
         option_map: Map of keyword argument name to the CallableOption schema
         node: AST node of the task state being added to the state machine
+        visitor: Instance of a node visitor to provide extra context for parsing options
 
     Returns:
         OptionsMap instance, which is a dict of key-values with defaults filled in
@@ -146,7 +151,7 @@ def parse_options(option_map: Dict[str, CallableOption], node: ast.Call) -> Opti
     options = OptionsMap(node)
     options.update(
         {
-            key: option.default_value(node)
+            key: option.default_value(node, visitor)
             if callable(option.default_value)
             else option.default_value
             for key, option in option_map.items()
@@ -160,13 +165,14 @@ def parse_options(option_map: Dict[str, CallableOption], node: ast.Call) -> Opti
             node,
         )
         option = option_map[key]
-        assert_supported_operation(
-            isinstance(keyword.value, option.value_type),
-            f"Invalid data type for the {key} option:"
-            f" expected a {option.value_type_label}.",
-            node,
-        )
-        value = option.get_value(keyword.value)
+        if option.value_type:
+            assert_supported_operation(
+                isinstance(keyword.value, option.value_type),
+                f"Invalid data type for the {key} option:"
+                f" expected a {option.value_type_label}.",
+                node,
+            )
+        value = option.get_value(keyword.value, visitor)
         options[key] = value
 
     # Ensure that all required options were provided

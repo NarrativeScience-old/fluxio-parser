@@ -124,7 +124,7 @@ class TaskVisitor(ast.NodeVisitor):
                 key = item.targets[0].id
                 if key in ATTRIBUTE_MAP:
                     attribute = ATTRIBUTE_MAP[key]
-                    value = attribute.get_value(item.value)
+                    value = attribute.get_value(item.value, visitor=self)
                     if attribute.allowed_values is not None:
                         assert_supported_operation(
                             value in attribute.allowed_values,

@@ -6,6 +6,7 @@ from typing import Any, Dict, Set
 from ..exceptions import assert_supported_operation, UnsupportedOperation
 from ..resource_decorators import RESOURCE_DECORATOR_MAP
 from ..util import parse_options
+from .event_processor import EventProcessorVisitor
 from .state_machine import StateMachineVisitor
 from .task import TaskVisitor
 
@@ -20,7 +21,8 @@ class ScriptVisitor(ast.NodeVisitor):
 
     def __init__(self) -> None:
         self.task_visitors: Dict[str, TaskVisitor] = {}
-        self.state_machine_visitors = {}
+        self.state_machine_visitors: Dict[str, StateMachineVisitor] = {}
+        self.event_processor_visitors: Dict[str, EventProcessorVisitor] = {}
 
     @property
     def dependencies(self) -> Set[str]:
@@ -42,9 +44,14 @@ class ScriptVisitor(ast.NodeVisitor):
                 visitor.visit(node)
                 self.task_visitors[node.name] = visitor
                 return
+            elif base.id == "EventProcessor":
+                visitor = EventProcessorVisitor()
+                visitor.visit(node)
+                self.event_processor_visitors[node.name] = visitor
+                return
 
         raise UnsupportedOperation(
-            "Only classes that inherit from Task are supported", node
+            "Only classes that inherit from Task or EventProcessor are supported", node
         )
 
     def visit_FunctionDef(self, node: Any) -> None:
@@ -65,7 +72,9 @@ class ScriptVisitor(ast.NodeVisitor):
                 decorator,
             )
             decorator_config = RESOURCE_DECORATOR_MAP[key]
-            options[key].append(parse_options(decorator_config["options"], decorator))
+            options[key].append(
+                parse_options(decorator_config["options"], decorator, visitor=self)
+            )
             max_count = decorator_config.get("max_count")
             assert_supported_operation(
                 max_count is None
