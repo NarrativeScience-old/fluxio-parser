@@ -45,7 +45,7 @@ class ScriptVisitor(ast.NodeVisitor):
                 self.task_visitors[node.name] = visitor
                 return
             elif base.id == "EventProcessor":
-                visitor = EventProcessorVisitor()
+                visitor = EventProcessorVisitor(node)
                 visitor.visit(node)
                 self.event_processor_visitors[node.name] = visitor
                 return
