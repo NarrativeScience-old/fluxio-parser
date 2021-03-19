@@ -3,12 +3,12 @@ import ast
 from collections import defaultdict
 from typing import Any, Dict, Set
 
-from ..exceptions import assert_supported_operation, UnsupportedOperation
-from ..resource_decorators import RESOURCE_DECORATOR_MAP
-from ..util import parse_options
-from .event_processor import EventProcessorVisitor
-from .state_machine import StateMachineVisitor
-from .task import TaskVisitor
+from ..exceptions import assert_supported_operation, UnsupportedOperation  # noqa
+from ..resource_decorators import RESOURCE_DECORATOR_MAP  # noqa
+from ..util import parse_options  # noqa
+from .event_processor import EventProcessorVisitor  # noqa
+from .state_machine import StateMachineVisitor  # noqa
+from .task import TaskVisitor  # noqa
 
 
 class ScriptVisitor(ast.NodeVisitor):
@@ -45,7 +45,7 @@ class ScriptVisitor(ast.NodeVisitor):
                 self.task_visitors[node.name] = visitor
                 return
             elif base.id == "EventProcessor":
-                visitor = EventProcessorVisitor()
+                visitor = EventProcessorVisitor(node)
                 visitor.visit(node)
                 self.event_processor_visitors[node.name] = visitor
                 return
