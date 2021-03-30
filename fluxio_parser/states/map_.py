@@ -56,7 +56,7 @@ class MapState(State):
 
     def __init__(
         self,
-        state_graph: nx.DiGraph,
+        state_graph: "nx.DiGraph",
         key: str,
         ast_node: Any,
         iterator: "StateMachineVisitor",  # noqa: F821

@@ -222,7 +222,7 @@ class ChoiceState(State):
         }
     """
 
-    def __init__(self, state_graph: nx.DiGraph, key: str, ast_node: Any) -> None:
+    def __init__(self, state_graph: "nx.DiGraph", key: str, ast_node: Any) -> None:
         """Initializer
 
         Args:
