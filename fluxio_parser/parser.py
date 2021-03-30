@@ -2,8 +2,8 @@
 
 import ast
 
-from .transformers import ScriptTransformer
-from .visitors import ScriptVisitor
+from fluxio_parser.transformers import ScriptTransformer
+from fluxio_parser.visitors import ScriptVisitor
 
 
 def parse_project_tree(

@@ -1,7 +1,7 @@
 """Contains the class that represents the AWS Step Functions Fail State"""
 from typing import Dict
 
-from .base import State
+from fluxio_parser.states.base import State
 
 
 class FailState(State):

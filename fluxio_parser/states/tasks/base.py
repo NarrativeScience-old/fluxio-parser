@@ -6,10 +6,15 @@ from typing import Any, Dict, Optional, Set
 
 import astor
 
-from ...constants import INVALID_RESULT_PATH_PATTERN, RESERVED_INPUT_DATA_KEYS
-from ...exceptions import assert_supported_operation
-from ...transformers import DataDictTransformer
-from ...util import (
+from fluxio_parser.constants import (
+    INVALID_RESULT_PATH_PATTERN,
+    RESERVED_INPUT_DATA_KEYS,
+)
+from fluxio_parser.exceptions import assert_supported_operation
+from fluxio_parser.states.base import State, StateMachineFragment
+from fluxio_parser.states.tasks.retry import Retry, RETRY_OPTION_MAP
+from fluxio_parser.transformers import DataDictTransformer
+from fluxio_parser.util import (
     CallableOption,
     convert_input_data_ref,
     GET_VALUE_MAP,
@@ -17,8 +22,6 @@ from ...util import (
     parse_options,
     serialize_error_name,
 )
-from ..base import State, StateMachineFragment
-from .retry import Retry, RETRY_OPTION_MAP
 
 
 def convert_data_dict(node: Any, visitor: ast.NodeVisitor) -> str:

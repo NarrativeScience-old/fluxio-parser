@@ -7,7 +7,7 @@ from typing import Any, Callable, Dict, NamedTuple, Optional
 
 import astor
 
-from .exceptions import assert_supported_operation, UnsupportedOperation
+from fluxio_parser.exceptions import assert_supported_operation, UnsupportedOperation
 
 logger = logging.getLogger(__name__)
 
@@ -107,9 +107,9 @@ class CallableOption(NamedTuple):
     #: Getter function for extracting the value from the AST node
     get_value: Callable[[Any, ast.NodeVisitor], Any]
     #: Default value if the option is not provided
-    default_value: Any = None  # noqa
+    default_value: Any = None
     #: Flag indicating that this option is required
-    required: bool = False  # noqa
+    required: bool = False
 
 
 class OptionsMap(dict):

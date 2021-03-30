@@ -3,7 +3,7 @@
 import ast
 from typing import Any
 
-from ..exceptions import assert_supported_operation, UnsupportedOperation
+from fluxio_parser.exceptions import assert_supported_operation, UnsupportedOperation
 
 
 class EventProcessorVisitor(ast.NodeVisitor):
@@ -43,9 +43,10 @@ class EventProcessorVisitor(ast.NodeVisitor):
         )
         arg_name_set = {arg.arg for arg in node.args.args}
         assert_supported_operation(
-            arg_name_set == {"message"},
-            f"get_custom_tags_* methods must only accept a positional argument of  message."
-            f" Provided: {', '.join(arg_name_set)}",
+            arg_name_set == {"message", "input_data", "state_data_client"},
+            "get_custom_tags_* methods must only accept positional arguments of"
+            " (message, input_data, state_data_client)."
+            f" Provided: {', '.join([arg.arg for arg in node.args.args])}",
             node,
         )
 

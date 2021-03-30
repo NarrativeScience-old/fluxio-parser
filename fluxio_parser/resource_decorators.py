@@ -2,8 +2,8 @@
 import ast
 from typing import Any, Optional
 
-from .exceptions import assert_supported_operation
-from .util import CallableOption, GET_VALUE_MAP
+from fluxio_parser.exceptions import assert_supported_operation
+from fluxio_parser.util import CallableOption, GET_VALUE_MAP
 
 
 def get_subscribe_status(node: Any, visitor: Optional[ast.NodeVisitor]) -> str:

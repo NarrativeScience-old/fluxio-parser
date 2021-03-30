@@ -1,7 +1,7 @@
 """Contains the class that represents the AWS Step Functions Succeed State"""
 from typing import Dict
 
-from .base import State
+from fluxio_parser.states.base import State
 
 
 class SucceedState(State):
@@ -12,15 +12,12 @@ class SucceedState(State):
 
     See: https://docs.aws.amazon.com/step-functions/latest/dg/amazon-states-language-succeed-state.html
 
-    For example::
-
-        return
-
-    resolves to::
+    For example, ``return`` resolves to::
 
         {
             "Type": "Succeed"
         }
+
     """
 
     TERMINAL = True

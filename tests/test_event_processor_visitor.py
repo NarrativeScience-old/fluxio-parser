@@ -23,10 +23,10 @@ class MyEventProcessor(EventProcessor):
         """Should not fail when proper methods set"""
         code = """
 class MyEventProcessor(EventProcessor):
-    async def get_custom_tags_Foo(message):
+    async def get_custom_tags_Foo(message, input_data, state_data_client):
         pass
 
-    async def get_custom_tags_Bar(message):
+    async def get_custom_tags_Bar(message, input_data, state_data_client):
         pass
 """
         tree = ast.parse(code)

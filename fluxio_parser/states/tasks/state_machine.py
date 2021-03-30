@@ -1,7 +1,7 @@
 """Contains class used to represent a Task State that integrates with Step Functions"""
 from typing import Dict, Set
 
-from .base import TaskState
+from fluxio_parser.states.tasks.base import TaskState
 
 
 class StateMachineTaskState(TaskState):

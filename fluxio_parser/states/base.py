@@ -4,7 +4,7 @@ from typing import Any, Dict, List
 import astor
 import networkx as nx
 
-from ..util import hash_node
+from fluxio_parser.util import hash_node
 
 
 class StateMachineFragment:
@@ -24,10 +24,12 @@ class StateMachineFragment:
         self._source = astor.to_source(ast_node).strip()
         self._hash = hash_node(ast_node)
 
-    def __str__(self):
+    def __str__(self) -> str:
+        """Returns string representation of the object"""
         return str(self.key)
 
-    def __repr__(self):
+    def __repr__(self) -> str:
+        """Returns REPR representation of the object"""
         return f"{self.__class__.__name__}(key={self.key})"
 
     def _set_end_or_next(self, data: Dict) -> Dict:
@@ -40,6 +42,7 @@ class StateMachineFragment:
 
         Returns:
             modified input data
+
         """
         edges = self.edges
         if len(edges) == 0:

@@ -2,7 +2,7 @@
 import json
 from typing import Dict, Set
 
-from .base import TaskState
+from fluxio_parser.states.tasks.base import TaskState
 
 
 class CodeBuildTaskState(TaskState):

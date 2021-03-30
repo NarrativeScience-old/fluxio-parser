@@ -3,10 +3,10 @@ from typing import Any, Dict, List, TYPE_CHECKING
 
 import networkx as nx
 
-from .base import State
+from fluxio_parser.states.base import State
 
 if TYPE_CHECKING:
-    from ..visitors import StateMachineVisitor
+    from fluxio_parser.visitors import StateMachineVisitor
 
 
 class ParallelState(State):

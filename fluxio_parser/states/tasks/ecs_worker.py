@@ -1,7 +1,7 @@
 """Contains class for a Task State that feeds an ECS worker"""
 from typing import Dict, Set
 
-from .base import TaskState
+from fluxio_parser.states.tasks.base import TaskState
 
 
 class ECSWorkerTaskState(TaskState):

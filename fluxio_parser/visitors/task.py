@@ -2,20 +2,20 @@
 import ast
 from typing import Any, Callable, NamedTuple, Optional, Set, Union
 
-from ..exceptions import assert_supported_operation, UnsupportedOperation
-from ..transformers import RunMethodTransformer
-from ..util import GET_VALUE_MAP
+from fluxio_parser.exceptions import assert_supported_operation, UnsupportedOperation
+from fluxio_parser.transformers import RunMethodTransformer
+from fluxio_parser.util import GET_VALUE_MAP
 
 
 class Attribute(NamedTuple):
     """Data class for a task class attribute schema"""
 
     #: Getter function for extracting the value from the AST node
-    get_value: Callable  # noqa
+    get_value: Callable
     #: Default value if the attribute is not provided
-    default_value: Any  # noqa
+    default_value: Any
     #: Set of allowed values
-    allowed_values: Set[Union[str, int]] = None  # noqa
+    allowed_values: Set[Union[str, int]] = None
 
 
 # Map of task class attribute name to an attribute schema
