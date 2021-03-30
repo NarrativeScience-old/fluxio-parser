@@ -7,7 +7,7 @@ from typing import Any, Callable, Dict, NamedTuple, Optional
 
 import astor
 
-from .exceptions import assert_supported_operation, UnsupportedOperation
+from fluxio_parser.exceptions import assert_supported_operation, UnsupportedOperation
 
 logger = logging.getLogger(__name__)
 

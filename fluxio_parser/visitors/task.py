@@ -2,9 +2,9 @@
 import ast
 from typing import Any, Callable, NamedTuple, Optional, Set, Union
 
-from ..exceptions import assert_supported_operation, UnsupportedOperation
-from ..transformers import RunMethodTransformer
-from ..util import GET_VALUE_MAP
+from fluxio_parser.exceptions import assert_supported_operation, UnsupportedOperation
+from fluxio_parser.transformers import RunMethodTransformer
+from fluxio_parser.util import GET_VALUE_MAP
 
 
 class Attribute(NamedTuple):

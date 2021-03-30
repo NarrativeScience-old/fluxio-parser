@@ -6,10 +6,13 @@ from typing import Any, Dict
 
 import astor
 
-from ..constants import INVALID_RESULT_PATH_PATTERN, RESERVED_INPUT_DATA_KEYS
-from ..exceptions import assert_supported_operation, UnsupportedOperation
-from ..util import convert_input_data_ref
-from .base import State
+from fluxio_parser.constants import (
+    INVALID_RESULT_PATH_PATTERN,
+    RESERVED_INPUT_DATA_KEYS,
+)
+from fluxio_parser.exceptions import assert_supported_operation, UnsupportedOperation
+from fluxio_parser.states.base import State
+from fluxio_parser.util import convert_input_data_ref
 
 
 class PassState(State):
@@ -67,6 +70,7 @@ class PassState(State):
 
         Returns:
             result value
+
         """
         if isinstance(self.ast_node, ast.Assign):
             source = astor.to_source(self.ast_node.value).strip()
@@ -94,6 +98,7 @@ class PassState(State):
 
         Returns:
             result path string
+
         """
         if isinstance(self.ast_node, ast.Assign):
             result_path = convert_input_data_ref(self.ast_node.targets[0])

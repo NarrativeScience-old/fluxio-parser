@@ -2,9 +2,9 @@
 import ast
 from typing import Dict
 
-from ..exceptions import UnsupportedOperation
-from ..util import convert_input_data_ref
-from .base import State
+from fluxio_parser.exceptions import UnsupportedOperation
+from fluxio_parser.states.base import State
+from fluxio_parser.util import convert_input_data_ref
 
 
 class WaitState(State):

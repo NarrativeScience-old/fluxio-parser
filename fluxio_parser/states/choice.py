@@ -1,10 +1,13 @@
 """Contains the classes that represent the AWS Step Functions Choice State"""
 import ast
-from typing import Any, Dict
+from typing import Any, Dict, TYPE_CHECKING
 
-from ..exceptions import assert_supported_operation, UnsupportedOperation
-from ..util import convert_input_data_ref, hash_node
-from .base import State, StateMachineFragment
+from fluxio_parser.exceptions import assert_supported_operation, UnsupportedOperation
+from fluxio_parser.states.base import State, StateMachineFragment
+from fluxio_parser.util import convert_input_data_ref, hash_node
+
+if TYPE_CHECKING:
+    import networkx as nx
 
 # Map of either:
 # * tuple of:
@@ -219,13 +222,15 @@ class ChoiceState(State):
         }
     """
 
-    def __init__(self, state_graph: "nx.DiGraph", key: str, ast_node: Any) -> None:
-        """
+    def __init__(self, state_graph: nx.DiGraph, key: str, ast_node: Any) -> None:
+        """Initializer
+
         Args:
             state_graph: DAG of state machine fragments with edges between them
             key: Key of the fragment in the state machine's States value. This only
                 really applies to States, not generic fragments.
             ast_node: AST node for this fragment in the .sfn file
+
         """
         super().__init__(state_graph, key, ast_node)
         self.choice_branches = []
@@ -242,6 +247,7 @@ class ChoiceState(State):
 
         Returns:
             new ChoiceBranch instance
+
         """
         choice_branch = ChoiceBranch(
             self.state_graph, f"ChoiceBranch-{hash_node(node)}", node

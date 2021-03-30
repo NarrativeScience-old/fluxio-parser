@@ -3,12 +3,15 @@ import ast
 from collections import defaultdict
 from typing import Any, Dict, Set
 
-from ..exceptions import assert_supported_operation, UnsupportedOperation  # noqa
-from ..resource_decorators import RESOURCE_DECORATOR_MAP  # noqa
-from ..util import parse_options  # noqa
-from .event_processor import EventProcessorVisitor  # noqa
-from .state_machine import StateMachineVisitor  # noqa
-from .task import TaskVisitor  # noqa
+from fluxio_parser.exceptions import (  # noqa
+    assert_supported_operation,
+    UnsupportedOperation,
+)
+from fluxio_parser.resource_decorators import RESOURCE_DECORATOR_MAP  # noqa
+from fluxio_parser.util import parse_options  # noqa
+from fluxio_parser.visitors.event_processor import EventProcessorVisitor  # noqa
+from fluxio_parser.visitors.state_machine import StateMachineVisitor  # noqa
+from fluxio_parser.visitors.task import TaskVisitor  # noqa
 
 
 class ScriptVisitor(ast.NodeVisitor):

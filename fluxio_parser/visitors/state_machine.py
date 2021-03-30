@@ -7,8 +7,8 @@ from typing import Any, Dict, List, Optional
 import astor
 import networkx as nx
 
-from ..exceptions import assert_supported_operation, UnsupportedOperation
-from ..states import (
+from fluxio_parser.exceptions import assert_supported_operation, UnsupportedOperation
+from fluxio_parser.states import (
     ChoiceState,
     create_task_state,
     FailState,
@@ -20,7 +20,7 @@ from ..states import (
     TaskState,
     WaitState,
 )
-from ..util import hash_node
+from fluxio_parser.util import hash_node
 
 
 class StateMachineVisitor(ast.NodeVisitor):

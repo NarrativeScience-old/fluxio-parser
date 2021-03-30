@@ -24,6 +24,7 @@ repos:
         args: [--markdown-linebreak-ext=md]
         # Need to define stages explicitly since `default_stages` was not being respected
         stages: [commit]
+      - id: end-of-file-fixer
 
   - repo: local
     hooks:

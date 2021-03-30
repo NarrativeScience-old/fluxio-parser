@@ -2,7 +2,7 @@
 import ast
 from typing import Any
 
-from ..util import convert_input_data_ref
+from fluxio_parser.util import convert_input_data_ref
 
 
 class DataDictTransformer(ast.NodeTransformer):

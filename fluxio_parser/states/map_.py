@@ -1,9 +1,17 @@
 """Contains the classes that represent the AWS Step Functions Map State"""
 import ast
-from typing import Any, Dict, Optional
+from typing import Any, Dict, Optional, TYPE_CHECKING
 
-from ..util import CallableOption, convert_input_data_ref, GET_VALUE_MAP, parse_options
-from .base import State
+from fluxio_parser.states.base import State
+from fluxio_parser.util import (
+    CallableOption,
+    convert_input_data_ref,
+    GET_VALUE_MAP,
+    parse_options,
+)
+
+if TYPE_CHECKING:
+    import networkx as nx
 
 # Map of task option name to an option schema
 OPTION_MAP = {
@@ -48,18 +56,20 @@ class MapState(State):
 
     def __init__(
         self,
-        state_graph: "nx.DiGraph",
+        state_graph: nx.DiGraph,
         key: str,
         ast_node: Any,
-        iterator: "StateMachineVisitor",
+        iterator: "StateMachineVisitor",  # noqa: F821
     ) -> None:
-        """
+        """Initializer
+
         Args:
             state_graph: DAG of state machine fragments with edges between them
             key: Key of the fragment in the state machine's States value. This only
                 really applies to States, not generic fragments.
             ast_node: AST node for this fragment in the .sfn file
             iterator: State machine visitor for the iterator function
+
         """
         super().__init__(state_graph, key, ast_node)
         self.iterator = iterator
@@ -77,6 +87,7 @@ class MapState(State):
 
         Returns:
             input path string
+
         """
         if len(self.ast_node.value.args) > 0:
             return convert_input_data_ref(self.ast_node.value.args[0])
@@ -91,6 +102,7 @@ class MapState(State):
 
         Returns:
             result path string or None
+
         """
         if isinstance(self.ast_node, ast.Assign) and len(self.ast_node.targets) > 0:
             return convert_input_data_ref(self.ast_node.targets[0])

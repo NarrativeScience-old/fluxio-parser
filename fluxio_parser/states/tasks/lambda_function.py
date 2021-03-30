@@ -1,8 +1,8 @@
 """Contains class used to represent a Task State that integrates with Lambda"""
 from typing import Dict, Set
 
-from .base import TaskState
-from .retry import Retry
+from fluxio_parser.states.tasks.base import TaskState
+from fluxio_parser.states.tasks.retry import Retry
 
 
 class LambdaTaskState(TaskState):
