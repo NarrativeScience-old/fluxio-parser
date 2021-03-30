@@ -2,11 +2,7 @@
 import ast
 from typing import Dict, List
 
-from fluxio_parser.util import (  # noqa
-    CallableOption,
-    GET_VALUE_MAP,
-    serialize_error_name,
-)
+from fluxio_parser.util import CallableOption, GET_VALUE_MAP, serialize_error_name
 
 RETRY_OPTION_MAP = {
     "on_exceptions": CallableOption(
