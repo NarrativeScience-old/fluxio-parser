@@ -24,6 +24,7 @@ Fluxio is a framework for building workflows using Python. This is the parser co
   - [schedule](#schedule)
   - [subscribe](#subscribe)
   - [export](#export)
+  - [process_events](#process_events)
 
 ## Fluxio DSL
 
@@ -608,7 +609,7 @@ The value for this argument can be a simple string but can also include any Clou
 
 ### export
 
-To explicitly "export" a state machine, wrap the function in an export decorator:
+To explicitly "export" a state machine, wrap the function in an `export` decorator:
 
 ```python
 @export()
@@ -624,3 +625,135 @@ You only need to use the export decorator if:
 - AND one of them is nested in another
 - AND you want to be able to directly execute the nested state machine
 - AND the nested state machine function isn't already wrapped in schedule or subscribe (those decorators cause the state machine to be exported automatically)
+
+### process_events
+
+State machines generate events during executions. Example event types include ExecutionStarted, TaskFailed, ExecutionSucceeded, etc. Check out the [full list](https://docs.aws.amazon.com/step-functions/latest/apireference/API_HistoryEvent.html#StepFunctions-Type-HistoryEvent-type). Fluxio automatically configures each state machine to log these events to a CloudWatch log group. You can subscribe to these logs in order to take actions like update a database record or send telemetry data to an APM.
+
+To process state machine execution events, wrap the state machine function in a `process_events` decorator:
+
+```python
+@process_events()
+def some_state_machine(data):
+    MyTask()
+```
+
+Without providing any keyword arguments, this will set up a default event processor. The default event processor will track the following event types:
+
+- ExecutionStarted
+- ExecutionSucceeded
+- ExecutionFailed
+
+The action taken for each event is defined by the `EventProcessor` task entry point class. Currently, this class is configured to send telemetry data to New Relic. For each event type, we send an event that includes tags for:
+
+- execution name
+- state machine name
+- trace ID and source
+- flattened execution input data (e.g. `{"foo": {"bar": 123}}` is flattened to `{"foo.bar": 123}`)
+- errors, if applicable
+
+For the ExecutionSucceeded and ExecutionFailed events, we also send a tracing span. The spans have a duration tag as well as the parent span ID if the execution was nested.
+
+#### Custom event processing
+
+To include custom tags in the New Relic events, you can define your own custom processor:
+
+1. Define a new class that extends `EventProcessor` within the `project.sfn` file.
+2. Define at least one `get_custom_tags_<event_type>` method. Within these methods, you can import packages just like a task's `run` method.
+3. Where you include the `process_events` decorator, call the decorator with a `processor` keyword argument. The value of the `processor` argument should be a reference to your new `EventProcessor` subclass.
+
+The method signatures and example are below:
+
+```python
+class SomeEventProcessor(EventProcessor):
+    """Custom event processor for the some_state_machine state machine"""
+
+    async def get_custom_tags_ExecutionStarted(
+        message: Dict[str, Any],
+        input_data: Dict[str, Any],
+        state_data_client: StateDataClient,
+    ) -> Dict[str, Any]:
+        """Get custom tags for the ExecutionStarted event
+
+        Args:
+            message: Log message with the schema:
+                * id -- int of the event
+                * type -- "ExecutionStarted"
+                * details -- dict with keys:
+                    * input -- JSON string
+                    * inputDetails -- dict with keys:
+                        * truncated -- bool
+                    * roleArn -- IAM role ARN
+                * previous_event_id -- int of the previous event
+                * event_timestamp -- int, timestamp in ms since epoch
+                * execution_arn -- ARN of the execution
+            input_data: Input data provided to the execution when it started
+            state_data_client: State data client for resolving input values if needed
+
+        Returns:
+            dict of tags
+
+        """
+        # This is a static dict, but you can reach out to a database or external resource to generate more.
+        return {"custom.tag": True}
+
+    async def get_custom_tags_ExecutionSucceeded(
+        message: Dict[str, Any],
+        input_data: Dict[str, Any],
+        state_data_client: StateDataClient,
+    ) -> Dict[str, Any]:
+        """Get custom tags for the ExecutionSucceeded event
+
+        Args:
+            message: Log message with the schema:
+                * id -- int of the event
+                * type -- "ExecutionSucceeded"
+                * details -- dict with keys:
+                    * output -- JSON string
+                    * outputDetails -- dict with keys:
+                        * truncated -- bool
+                * previous_event_id -- int of the previous event
+                * event_timestamp -- int, timestamp in ms since epoch
+                * execution_arn -- ARN of the execution
+            input_data: Input data provided to the execution when it started
+            state_data_client: State data client for resolving input values if needed
+
+        Returns:
+            dict of tags
+
+        """
+        # This is a static dict, but you can reach out to a database or external resource to generate more.
+        return {"custom.tag": True}
+
+    async def get_custom_tags_ExecutionFailed(
+        message: Dict[str, Any],
+        input_data: Dict[str, Any],
+        state_data_client: StateDataClient,
+    ) -> Dict[str, Any]:
+        """Get custom tags for the ExecutionFailed event
+
+        Args:
+            message: Log message with the schema:
+                * id -- int of the event
+                * type -- "ExecutionFailed"
+                * details -- dict with keys:
+                    * cause -- Optional[str], A more detailed explanation of the cause of the failure
+                    * error -- str, The error code of the failure
+                * previous_event_id -- int of the previous event
+                * event_timestamp -- int, timestamp in ms since epoch
+                * execution_arn -- ARN of the execution
+            input_data: Input data provided to the execution when it started
+            state_data_client: State data client for resolving input values if needed
+
+        Returns:
+            dict of tags
+
+        """
+        # This is a static dict, but you can reach out to a database or external resource to generate more.
+        return {"custom.tag": True}
+
+
+@process_events(processor=SomeEventProcessor)
+def some_state_machine(data):
+    MyTask()
+```
