@@ -90,14 +90,17 @@ class Bar(Task):
 
 Options currently include:
 
-- `lambda`
-- `ecs`
-- `lambda:pexpm-runner`
-  - __NOTE:__ PEXPM Runner is a Lambda function that downloads a PEX binary to /tmp and executes it in a subprocess at runtime. This should only be used to get around the 250MB artifact limit.
-- `ecs:worker`
-  - See below for specifics
+| Service               | Description                                                                                                                                                                                                                                           |
+| --------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `lambda`              | Default service if not specified. Lambdas invoke quickly and can return structured data. Use `lambda` wherever possible.                                                                                                                              |
+| `lambda:container`    | Runs a Lambda function using the container integration introduced in December 2020. This is handy when your code bundle exceeds 250 MB or you have a custom runtime. Beware of cold start times though, since pulling the container image takes time. |
+| `ecs`                 | Runs an ECS task and waits for the task to complete. This is useful for tasks that take longer than Lambda's timeout of 15 minutes. Bootstap times are slow however, so low-latency tasks should not use the `ecs` service.                           |
+| `ecs:worker`          | See below for specifics                                                                                                                                                                                                                               |
+| `lambda:pexpm-runner` | __DEPRECATED:__ PEXPM Runner is a Lambda function that downloads a PEX binary to /tmp and executes it in a subprocess at runtime. This should only be used to get around the 250MB artifact limit. Use `lambda:container` instead.                    |
 
 ##### ECS Worker
+
+__NOTE:__ If your task takes less than 15 minutes to run, you are more than likely better served by the `lambda:container` service option. The ECS Worker pattern is more operationally complex.
 
 The `ecs:worker` service type uses the ["Wait for Task Token" service integration pattern in Step Functions](https://docs.aws.amazon.com/step-functions/latest/dg/connect-to-resource.html#connect-wait-token). This means instead of directly running a task, like a Lambda Function or ECS task, a message is sent to an SQS queue for processing by an external system. In Fluxio, the external system is an ECS Fargate service. The tasks in the service are queue workers; they poll the SQS queue and execute business logic based on the message. All the SQS and ECS infrastructure is managed by Fluxio (via CloudFormation) just like other service types.
 
