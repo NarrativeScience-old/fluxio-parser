@@ -89,3 +89,10 @@ repos:
             .*__init__.py$|
             .*setup.py$|
           )$
+
+      - id: circleci-config
+        name: Pack the CircleCI config
+        entry: .githooks/pre-commit-scripts/circleci.sh
+        language: script
+        files: '^\.circleci/'
+        pass_filenames: false
