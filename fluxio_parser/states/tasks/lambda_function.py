@@ -36,7 +36,7 @@ class LambdaTaskState(TaskState):
         """Returns the task state Parameters key."""
         return {
             "meta": {
-                # Pass metdata using keys from the context object
+                # Pass metadata using keys from the context object
                 # See: https://docs.aws.amazon.com/step-functions/latest/dg/input-output-contextobject.html
                 "sfn_execution_name.$": "$$.Execution.Name",
                 "sfn_state_name.$": "$$.State.Name",

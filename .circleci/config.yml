@@ -6,7 +6,7 @@ orbs:
 jobs:
   test:
     docker:
-      - image: circleci/python:3.6
+      - image: cimg/python:3.10
     steps:
       - ghpr/build-prospective-branch
       - run:
@@ -29,7 +29,7 @@ jobs:
           when: on_fail
   publish:
     docker:
-      - image: circleci/python:3.6
+      - image: cimg/python:3.10
     steps:
       - checkout
       - run: pip install poetry

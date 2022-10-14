@@ -1,3 +1,4 @@
+"""Test all event processing"""
 import ast
 import unittest
 

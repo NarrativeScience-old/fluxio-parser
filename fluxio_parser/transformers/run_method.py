@@ -25,9 +25,11 @@ class RunMethodTransformer(ast.NodeTransformer):
     """
 
     def visit_Import(self, node: Any) -> None:
+        """Visit and remove the imports"""
         # Remove the import
         return None
 
     def visit_ImportFrom(self, node: Any) -> None:
+        """Visit and remove the import from's"""
         # Remove the import
         return None
