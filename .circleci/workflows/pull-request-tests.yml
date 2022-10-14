@@ -1,0 +1,15 @@
+jobs:
+  - build-test:
+      context: lexio-package
+      filters:
+        branches:
+          ignore:
+            - master
+  - send-slack-on-pr-success:
+      requires:
+        - build-test
+      context: lexio-package
+      filters:
+        branches:
+          ignore:
+            - master

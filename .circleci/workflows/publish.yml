@@ -1,0 +1,6 @@
+jobs:
+  - poetry-publish:
+      context: opensource
+      filters:
+        branches:
+          only: master
