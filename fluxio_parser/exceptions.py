@@ -18,6 +18,7 @@ class UnsupportedOperation(SFNError, AssertionError):
         Args:
             message: Error message
             node: AST node that was checked
+
         """
         self.node = node
         msg = f"""{message.rstrip('.')}.
@@ -38,6 +39,7 @@ def assert_supported_operation(assertion: bool, message: str, node: Any) -> None
 
     Raises:
         :py:exc:`.UnsupportedOperation` if the assertion is false
+
     """
     if not assertion:
         raise UnsupportedOperation(message, node)

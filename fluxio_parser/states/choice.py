@@ -37,7 +37,7 @@ OP_TO_KEY = {
     ast.Not: "Not",
 }
 
-# Map of the stringify built-in function name to the actual built-in funciton
+# Map of the stringify built-in function name to the actual built-in function
 TYPE_TO_CLASS = {"str": str, "int": int, "float": float, "bool": bool}
 
 

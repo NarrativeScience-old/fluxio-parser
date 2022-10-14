@@ -37,7 +37,7 @@ class StateMachineVisitor(ast.NodeVisitor):
     def __init__(
         self,
         name: str,
-        task_visitors: Dict[str, "TaskVisitor"],
+        task_visitors: Dict[str, "TaskVisitor"],  # noqa
         state_machine_visitors: Dict[str, "StateMachineVisitor"],
         schedule: Optional[List[Dict]] = None,
         export: Optional[List[Dict]] = None,

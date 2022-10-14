@@ -1,3 +1,4 @@
+"""Test the script transformer"""
 import ast
 import unittest
 

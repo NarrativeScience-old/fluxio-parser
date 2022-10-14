@@ -1,0 +1,11 @@
+description: Restores the build-test cache for pyenv, poetry, and pre-commit
+steps:
+  - restore_cache:
+      keys:
+        - v1-pyenv-{{ arch }}-fluxio-parser-{{ checksum "poetry.lock" }}
+  - restore_cache:
+      keys:
+        - v1-poetry-{{ arch }}-fluxio-parser-{{ checksum "poetry.lock" }}
+  - restore_cache:
+      keys:
+        - v1-precommit-{{ arch }}-fluxio-parser-{{ checksum ".pre-commit-config.yaml" }}
