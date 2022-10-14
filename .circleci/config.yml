@@ -303,7 +303,7 @@ jobs:
             - run:
                 command: |
                     mkdir -p test-results
-                    poetry run pytest tests/unit --junit-xml test-results/unit-results.xml
+                    poetry run pytest --junit-xml test-results/results.xml
                 name: Run tests
             - store-test-artifacts:
                 artifacts_path: test-results

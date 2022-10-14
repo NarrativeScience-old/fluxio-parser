@@ -28,9 +28,7 @@ steps:
       name: Run tests
       command: |
         mkdir -p test-results
-        poetry run pytest tests/unit --junit-xml test-results/unit-results.xml
-# TODO: Had to comment out because they fail due to security constraints in AWS post SF merger
-#        poetry run pytest tests/functional --junit-xml test-results/functional-results.xml
+        poetry run pytest --junit-xml test-results/results.xml
   - store-test-artifacts:
       artifacts_path: test-results
       export_test_results: true
